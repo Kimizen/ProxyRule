@@ -4,7 +4,6 @@
 # UPDATED: 2025-11-18 19:17:00 Asia/Shanghai
 # DOMAIN-SUFFIX: 4
 # TOTAL: 6
-[Rule]
 DOMAIN-SUFFIX,segment.com
 DOMAIN-SUFFIX,browser-intake-datadoghq.com
 DOMAIN,diabrowser
