@@ -1,13 +1,13 @@
-# NAME: DiaBrowser Intelligence
+# NAME: DiaBrowser
 # AUTHOR: Kimizen
-# REPO: https://github.com/Kimizen/ProxyRule
+# REPO: https://github.com/Kimizen/ProxyRule/Surge
 # UPDATED: 2025-11-18 19:17:00 Asia/Shanghai
 # DOMAIN-SUFFIX: 4
 # TOTAL: 6
 [Rule]
-DOMAIN-SUFFIX,segment.com,Intelligence
-DOMAIN-SUFFIX,browser-intake-datadoghq.com,Intelligence
-DOMAIN,diabrowser,Intelligence
-DOMAIN-SUFFIX,segment.io,Intelligence
-DOMAIN-SUFFIX,diabrowser.engineering,Intelligence
-DOMAIN-SUFFIX,diabrowser,Intelligence
+DOMAIN-SUFFIX,segment.com
+DOMAIN-SUFFIX,browser-intake-datadoghq.com
+DOMAIN,diabrowser
+DOMAIN-SUFFIX,segment.io
+DOMAIN-SUFFIX,diabrowser.engineering
+DOMAIN-SUFFIX,diabrowser
