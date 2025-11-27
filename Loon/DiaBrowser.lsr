@@ -1,0 +1,12 @@
+# NAME: DiaBrowser
+# AUTHOR: Kimizen
+# REPO: https://github.com/Kimizen/ProxyRule/Loon
+# UPDATED: 2025-11-18 19:17:00 Asia/Shanghai
+# DOMAIN-SUFFIX: 4
+# TOTAL: 6
+DOMAIN-SUFFIX,segment.com
+DOMAIN-SUFFIX,browser-intake-datadoghq.com
+DOMAIN,diabrowser
+DOMAIN-SUFFIX,segment.io
+DOMAIN-SUFFIX,diabrowser.engineering
+DOMAIN-SUFFIX,diabrowser
