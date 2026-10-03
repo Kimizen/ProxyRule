@@ -1,0 +1,18 @@
+#!name=Rubii 每日签到
+#!desc=自动抓取 Rubii App 的登录凭据并完成每日签到，每天领取 30 Ruby
+#!author=Kimizen
+#!homepage=https://github.com/Kimizen/ProxyRule
+#!tag=签到,工具,Rubii
+
+[Argument]
+sign_time = input, "0 9 * * *", tag=签到时间, desc=格式「分 时 日 月 周」，0 9 * * * 表示每天 09:00
+enable_capture = switch, true, tag=自动抓取凭据, desc=开启后自动保存 App 的登录凭据，需先在 Loon 开启 HTTPS 解密
+enable_sign = switch, true, tag=启用定时签到
+
+[Script]
+request if ${url} ~= /^https?:\/\/api2\.rubii\.ai\// then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/main/Loon/rubii_checkin.js") with enable=${enable_capture}, tag=Rubii抓凭据, timeout=10, debug=true
+response if ${url} ~= /^https?:\/\/api2\.rubii\.ai\/auth\// then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/main/Loon/rubii_checkin.js", "capture=response") with enable=${enable_capture}, tag=Rubii抓登录响应, timeout=10, debug=true, requires_body=true
+cron {sign_time} then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/main/Loon/rubii_checkin.js") with enable=${enable_sign}, tag=Rubii每日签到, img_url=checkmark.seal.fill, timeout=300, debug=true
+
+[MITM]
+hostname = api2.rubii.ai
