@@ -2,6 +2,8 @@
 #!desc=自动抓取 Rubii App 的登录凭据并完成每日签到 每天领取 30 Ruby
 #!author=Kimizen
 #!homepage=https://github.com/Kimizen/ProxyRule
+#!icon=https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/2a/60/37/2a6037b6-d993-ee71-aa09-3e33ffe4387f/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg
+#!openUrl=https://apps.apple.com/us/app/rubii-ai-characters-community/id6743956024
 #!tag=签到,工具,Rubii
 
 [Argument]
