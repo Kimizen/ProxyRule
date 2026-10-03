@@ -15,6 +15,7 @@ enable_sign = switch, true, tag=启用定时签到
 request if ${url} ~= /^https?:\/\/api2\.rubii\.ai\// then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/refs/heads/main/Loon/rubii_checkin.js") with enable=${enable_capture}, tag="Rubii抓凭据", timeout=10, debug=true
 response if ${url} ~= /^https?:\/\/api2\.rubii\.ai\/auth\// then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/refs/heads/main/Loon/rubii_checkin.js", "capture=response") with enable=${enable_capture}, tag="Rubii抓登录响应", timeout=10, debug=true, requires_body=true
 cron {sign_time} then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/refs/heads/main/Loon/rubii_checkin.js") with enable=${enable_sign}, tag="Rubii每日签到", img_url="checkmark.seal.fill", timeout=300, debug=true
+generic then script("https://raw.githubusercontent.com/Kimizen/ProxyRule/refs/heads/main/Loon/rubii_checkin.js", "diag") with tag="Rubii状态诊断", img_url="stethoscope", timeout=60
 
 [MITM]
 hostname = api2.rubii.ai
