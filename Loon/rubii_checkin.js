@@ -42,6 +42,7 @@ var STORE = {
   kid:   'Rubii_KeyId',
   fmt:   'Rubii_SignFormat',
   smp:   'Rubii_Samples',
+  respK: 'Rubii_RespKeys',
   last:  'Rubii_LastResult'
 };
 
@@ -141,11 +142,34 @@ function captureResponse() {
   if (sc) { $persistentStore.write(String(sc), STORE.sec); got.push('secret'); }
   if (ki) { $persistentStore.write(String(ki), STORE.kid); got.push('keyId'); }
 
+  // 记录响应的字段结构（含类型与长度），用于定位 secret
+  var keys = collectFields(json, 0, '', []);
+  $persistentStore.write(keys.join(' '), STORE.respK);
+
   if (got.length) {
     console.log('[Rubii] 响应中已更新: ' + got.join(' / '));
-    notify('Rubii 凭据已更新', got.join(' / '), '');
+    console.log('[Rubii] 响应字段: ' + keys.join(' '));
+    notify('Rubii 凭据已更新', got.join(' / '), sc ? '已含签名密钥' : '未含 secret');
   }
   $done({});
+}
+
+
+// 收集 JSON 字段名 + 类型（字符串带字符数），最多 3 层，用于诊断响应结构
+function collectFields(obj, depth, prefix, out) {
+  if (!obj || typeof obj !== 'object' || depth > 2 || out.length > 80) return out;
+  for (var k in obj) {
+    if (!Object.prototype.hasOwnProperty.call(obj, k)) continue;
+    var v = obj[k];
+    var t = typeof v;
+    if (t === 'string') out.push(prefix + k + '(' + v.length + ')');
+    else if (t === 'number') out.push(prefix + k + '(num)');
+    else if (t === 'boolean') out.push(prefix + k + '(bool)');
+    else if (v === null) out.push(prefix + k + '(null)');
+    else out.push(prefix + k + '(obj)');
+    if (v && t === 'object') collectFields(v, depth + 1, prefix + k + '.', out);
+  }
+  return out;
 }
 
 
@@ -375,6 +399,9 @@ function runDiag() {
   if (samples.length) lines.push('候选=' + candidates(samples[0]).length);
   if (cred.sec && samples.length) {
     lines.push('反推=' + (detectFormat(cred.sec, samples) || '未命中'));
+  } else {
+    var rk = $persistentStore.read(STORE.respK);
+    if (rk) lines.push('响应字段=' + rk);
   }
   var text = lines.join(' | ');
   console.log('[Rubii] 诊断: ' + text);
