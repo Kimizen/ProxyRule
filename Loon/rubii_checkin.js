@@ -107,7 +107,10 @@ function captureRequest() {
     got.push('Sample');
   }
 
-  if (got.length) console.log('[Rubii] 凭据/样本已更新: ' + got.join(' / '));
+  if (got.length) {
+    console.log('[Rubii] 凭据/样本已更新: ' + got.join(' / '));
+    if (auth) $persistentStore.write('抓到凭据 ' + new Date().toLocaleString(), STORE.last);
+  }
   $done({});
 }
 
@@ -149,6 +152,7 @@ function captureResponse() {
   if (got.length) {
     console.log('[Rubii] 响应中已更新: ' + got.join(' / '));
     console.log('[Rubii] 响应字段: ' + keys.join(' '));
+    $persistentStore.write('抓到凭据 ' + new Date().toLocaleString(), STORE.last);
     notify('Rubii 凭据已更新', got.join(' / '), sc ? '已含签名密钥' : '未含 secret');
   }
   $done({});
@@ -299,8 +303,10 @@ function runCheckin() {
     return;
   }
   if (!cred.sec) {
-    notify('Rubii 签到失败', '缺少签名密钥', '需要退出并重新登录一次 Rubii 以触发下发');
-    finish('❌ 缺 secret', '重新登录一次即可');
+    // 已确认：secret 是 App 内置混淆密钥，不会随登录响应下发，
+    // 静态无法获取。因此缺 secret 时降级为「定时提醒手动签到」。
+    notify('⏰ Rubii 该签到啦', '点开 App 手动签到', '每天可领 30 Ruby');
+    finish('⏰ 待手动签到', '打开 Rubii App 点签到即可');
     return;
   }
 
@@ -393,16 +399,29 @@ function runDiag() {
   var samples = loadSamples();
   var lines = [];
   lines.push('token=' + (cred.jwt ? '有' : '无'));
+  lines.push('refresh=' + (cred.rt ? '有' : '无'));
   lines.push('secret=' + (cred.sec ? '有' : '无'));
+  lines.push('keyId=' + (cred.kid || '无'));
   lines.push('样本=' + samples.length);
+  lines.push('上次=' + ($persistentStore.read(STORE.last) || '无'));
   lines.push('格式=' + ($persistentStore.read(STORE.fmt) || '未锁定'));
-  if (samples.length) lines.push('候选=' + candidates(samples[0]).length);
-  if (cred.sec && samples.length) {
+
+  if (!cred.jwt) {
+    lines.push('⚠️连token都没抓到→HTTPS解密没开或证书未信任，或登录请求没经过Loon');
+  } else if (!cred.sec && samples.length) {
+    lines.push('→token已抓到但没secret，登录响应里可能没有该字段');
+  } else if (cred.sec && samples.length) {
+    lines.push('候选=' + candidates(samples[0]).length);
     lines.push('反推=' + (detectFormat(cred.sec, samples) || '未命中'));
-  } else {
+  } else if (cred.sec) {
+    lines.push('→有secret但没样本，打开RubiiApp点两下产生请求');
+  }
+
+  if (!cred.sec) {
     var rk = $persistentStore.read(STORE.respK);
     if (rk) lines.push('响应字段=' + rk);
   }
+
   var text = lines.join(' | ');
   console.log('[Rubii] 诊断: ' + text);
   $done({ title: 'Rubii 诊断', content: text });
